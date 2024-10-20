@@ -1,7 +1,7 @@
 package com.example.todoapp.ui.todo
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,18 +11,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.todoapp.ui.navigation.AddTodo
-import com.example.todoapp.ui.navigation.TodoDetail
 
 @Composable
 fun TodoListScreen(
@@ -52,24 +53,27 @@ fun TodoListScreen(
         }
     ) {
         if (todoList.isEmpty()) {
-            Text(
-                text = "Press the + button to add a TODO item",
+            Box(
                 modifier = Modifier.fillMaxSize(),
-                textAlign = TextAlign.Center
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Press the + button to add a TODO item",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
         } else {
-            LazyColumn (
-                modifier = Modifier.padding(top=it.calculateTopPadding())
-            ){
+            LazyColumn(
+                modifier = Modifier.padding(top = it.calculateTopPadding())
+            ) {
                 items(todoList) { todo ->
                     Text(
                         text = todo.title,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
-                            .clickable {
-                                navController.navigate(TodoDetail(todo.id))
-                            }
+                            .clickable {}
                     )
                 }
             }

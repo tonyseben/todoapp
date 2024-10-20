@@ -6,7 +6,4 @@ import kotlinx.serialization.Serializable
 object TodoList
 
 @Serializable
-data class TodoDetail(val id: Int)
-
-@Serializable
 object AddTodo

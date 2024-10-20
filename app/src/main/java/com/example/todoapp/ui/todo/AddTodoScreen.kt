@@ -1,7 +1,6 @@
 package com.example.todoapp.ui.todo
 
-import android.annotation.SuppressLint
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,26 +16,26 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTodoScreen(
     navController: NavController,
     viewModel: TodoViewModel
 ) {
-    var newTodoTitle by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var newTodoTitle by remember { mutableStateOf("") }
+    val saveStatus by viewModel.saveStatus.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add New TODO") },
+                title = { Text("Enter new item") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -47,15 +46,15 @@ fun AddTodoScreen(
     ) {
         Column(
             modifier = Modifier
+                .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
                 value = newTodoTitle,
                 onValueChange = { newTodoTitle = it },
-                label = { Text("TODO Title") },
+                label = { Text("Enter todo") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -64,28 +63,41 @@ fun AddTodoScreen(
             Button(
                 onClick = {
                     if (newTodoTitle.isNotBlank()) {
-                        isLoading = true
                         coroutineScope.launch {
-                            try {
-                                viewModel.onAddTodoClick(title = newTodoTitle)
-                                delay(3000)
-                                navController.popBackStack()
-                            } catch (e: Exception) {
-                                isLoading = false
-                            } finally {
-                                isLoading = false
-                            }
+                            viewModel.onAddTodoClick(title = newTodoTitle)
                         }
                     }
                 },
-                enabled = !isLoading
+                enabled = saveStatus !is SaveStatus.InProgress
             ) {
-                if (isLoading) {
+                if (saveStatus is SaveStatus.InProgress) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp))
                 } else {
                     Text("Add TODO")
                 }
             }
+        }
+
+        when (saveStatus) {
+            is SaveStatus.Success -> {
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                    viewModel.clearSaveStatus()
+                }
+            }
+
+            is SaveStatus.Failed -> {
+                LaunchedEffect(saveStatus) {
+                    Toast.makeText(
+                        context,
+                        (saveStatus as SaveStatus.Failed).errorMessage,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    viewModel.clearSaveStatus()
+                }
+            }
+
+            else -> {}
         }
     }
 }
