@@ -8,6 +8,8 @@ import com.example.todoapp.domain.usecase.SaveTodoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,6 +29,7 @@ class TodoViewModel @Inject constructor(
     val saveStatus: StateFlow<SaveStatus?> = _saveStatus
 
     init {
+        observeSearchQuery()
         getTodos()
     }
 
@@ -38,8 +41,19 @@ class TodoViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
+    }
+
+    private fun observeSearchQuery() {
         viewModelScope.launch {
-            _todoList.value = getTodosUseCase().filter { it.title.contains(query, true) }
+            _searchQuery
+                .debounce(2000)
+                .collectLatest { query ->
+                    _todoList.value = if (query.isEmpty()) {
+                        getTodosUseCase()
+                    } else {
+                        getTodosUseCase().filter { it.title.contains(query, true) }
+                    }
+                }
         }
     }
 
@@ -50,6 +64,7 @@ class TodoViewModel @Inject constructor(
                 val todo = Todo(title = title, description = description)
                 addTodoUseCase(todo)
                 getTodos()
+                _searchQuery.value = ""
                 _saveStatus.value = SaveStatus.Success
             } catch (e: Exception) {
                 _saveStatus.value = SaveStatus.Failed("Error: Something went wrong.")
