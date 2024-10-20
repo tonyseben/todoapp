@@ -67,7 +67,7 @@ class TodoViewModel @Inject constructor(
                 _searchQuery.value = ""
                 _saveStatus.value = SaveStatus.Success
             } catch (e: Exception) {
-                _saveStatus.value = SaveStatus.Failed("Error: Something went wrong.")
+                _saveStatus.value = SaveStatus.Failed("Failed to add TODO")
             }
         }
     }

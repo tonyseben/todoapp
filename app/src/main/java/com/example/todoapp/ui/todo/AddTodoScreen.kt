@@ -93,6 +93,7 @@ fun AddTodoScreen(
                         (saveStatus as SaveStatus.Failed).errorMessage,
                         Toast.LENGTH_LONG
                     ).show()
+                    navController.popBackStack()
                     viewModel.clearSaveStatus()
                 }
             }
