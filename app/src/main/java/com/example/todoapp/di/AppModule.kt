@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.example.todoapp.data.local.TodoDao
 import com.example.todoapp.data.local.TodoDatabase
-import com.example.todoapp.data.repository.TodoRepository
+import com.example.todoapp.domain.repository.TodoRepository
 import com.example.todoapp.data.repository.TodoRepositoryImpl
 import dagger.Module
 import dagger.Provides
