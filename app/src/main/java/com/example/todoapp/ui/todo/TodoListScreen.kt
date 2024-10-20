@@ -20,16 +20,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todoapp.ui.navigation.AddTodo
 import com.example.todoapp.ui.navigation.TodoDetail
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TodoListScreen(
     navController: NavController,
-    viewModel: TodoViewModel = hiltViewModel()
+    viewModel: TodoViewModel
 ) {
     val todoList by viewModel.todoList.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -37,7 +35,8 @@ fun TodoListScreen(
     Scaffold(
         topBar = {
             TextField(
-                value = "",
+                modifier = Modifier.fillMaxWidth(),
+                value = searchQuery,
                 onValueChange = {
                     viewModel.onSearchQueryChanged(it)
                 },
@@ -59,10 +58,12 @@ fun TodoListScreen(
                 textAlign = TextAlign.Center
             )
         } else {
-            LazyColumn {
+            LazyColumn (
+                modifier = Modifier.padding(top=it.calculateTopPadding())
+            ){
                 items(todoList) { todo ->
                     Text(
-                        text = "test title",
+                        text = todo.title,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)

@@ -40,7 +40,13 @@ class TodoViewModel @Inject constructor(
         }
     }
 
-    fun onAddTodoClick() {
+    fun onAddTodoClick(title: String, description: String? = null) {
+        viewModelScope.launch {
+            val todo = Todo(title = title, description = description)
+            addTodoUseCase(todo)
 
+            _searchQuery.value = ""
+            getTodos()
+        }
     }
 }
