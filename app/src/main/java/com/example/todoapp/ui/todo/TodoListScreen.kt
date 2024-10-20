@@ -1,4 +1,4 @@
-package com.example.todoapp.ui
+package com.example.todoapp.ui.todo
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable

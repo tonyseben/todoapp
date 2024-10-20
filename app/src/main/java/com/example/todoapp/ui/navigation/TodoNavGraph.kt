@@ -1,21 +1,13 @@
-package com.example.todoapp.ui
+package com.example.todoapp.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import kotlinx.serialization.Serializable
-
-@Serializable
-object TodoList
-
-@Serializable
-data class TodoDetail(val id: String)
-
-@Serializable
-object AddTodo
-
+import com.example.todoapp.ui.todo.AddTodoScreen
+import com.example.todoapp.ui.todo.TodoDetailScreen
+import com.example.todoapp.ui.todo.TodoListScreen
 
 @Composable
 fun ToDoNavGraph(navController: NavHostController) {
