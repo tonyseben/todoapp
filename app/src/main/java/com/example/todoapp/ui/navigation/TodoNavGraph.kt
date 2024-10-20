@@ -14,7 +14,7 @@ fun ToDoNavGraph(navController: NavHostController) {
     NavHost(navController, startDestination = TodoList){
 
         composable<TodoList> {
-            TodoListScreen()
+            TodoListScreen(navController)
         }
 
         composable<TodoDetail> { entry ->
